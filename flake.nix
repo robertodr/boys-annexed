@@ -27,6 +27,7 @@
             ps.plotly
             ps.sympy
             ps.tqdm
+            ps.typer
           ]);
     in {
       # used with mybinder.org
