@@ -17,32 +17,33 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-      derivation = pkgs.mkShell {
+      pythonEnv =
+        pkgs.python311.withPackages
+        (ps:
+          with ps; [
+            ps.tqdm
+            ps.h5py
+            ps.jupyterlab
+            ps.numpy
+            ps.plotly
+            ps.scipy
+            ps.sympy
+          ]);
+    in {
+      # used with mybinder.org
+      defaultPackage = pkgs.mkShell {packages = [pythonEnv];};
+
+      devShell = pkgs.mkShell {
         packages = with pkgs; [
           cmake
           gcc
-          hdf5
           highfive
           ninja
-
-          (python311.withPackages
-            (ps:
-              with ps; [
-                ps.tqdm
-                ps.h5py
-                ps.jupyterlab
-                ps.numpy
-                ps.plotly
-                ps.scipy
-                ps.sympy
-              ]))
+          pythonEnv
         ];
 
         hardeningDisable = ["all"];
         NINJA_STATUS = "[Built edge %f of %t in %e sec] ";
       };
-    in {
-      defaultPackage = derivation;
-      devShell = derivation;
     });
 }
