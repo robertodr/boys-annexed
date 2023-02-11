@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
+from pathlib import Path
+import datetime
+
 import h5py
+import typer
 from sympy import Float, Integer, Pow, Range, lowergamma, symbols
 from tqdm import trange
 
@@ -24,7 +28,13 @@ def boys(n, x):
     return lowergamma(n + 1 / 2, x) / (2 * Pow(x, (n + 1 / 2)))
 
 
-if __name__ == "__main__":
+def main(file_path: Path = typer.Argument("boys_reference.h5")) -> None:
+    # change suffix to ".h5"
+    file_path = file_path.with_suffix(".h5")
+
+    path = ("data" / file_path).resolve()
+
+    print(f"Generating and saving reference values to {path}")
 
     intervals = {
         "lo": (0, 11.5, 10_000),
@@ -32,7 +42,9 @@ if __name__ == "__main__":
         "hi": (13.5, 150, 100_000),
     }
 
-    with h5py.File("boys_reference.h5", "w") as fh:
+    with h5py.File(path, "w") as fh:
+
+        fh.attrs["created"] = f"{datetime.datetime.now().isoformat(timespec='minutes')}"
 
         for k, v in intervals.items():
             h, xs = interval(a=v[0], b=v[1], n=v[2])
@@ -61,3 +73,7 @@ if __name__ == "__main__":
                     compression="gzip",
                     compression_opts=9,
                 )
+
+
+if __name__ == "__main__":
+    typer.run(main)

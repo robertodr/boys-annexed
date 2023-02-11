@@ -25,6 +25,7 @@
             ps.jupyterlab
             ps.numpy
             ps.plotly
+            ps.rich
             ps.sympy
             ps.tqdm
             ps.typer
