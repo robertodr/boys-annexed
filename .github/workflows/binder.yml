@@ -4,8 +4,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - flake.nix
+      - .github/workflows/binder.yml
   workflow_dispatch:
   pull_request:
+    paths:
+      - flake.nix
+      - .github/workflows/binder.yml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
