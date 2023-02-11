@@ -21,13 +21,12 @@
         pkgs.python311.withPackages
         (ps:
           with ps; [
-            ps.tqdm
             ps.h5py
             ps.jupyterlab
             ps.numpy
             ps.plotly
-            ps.scipy
             ps.sympy
+            ps.tqdm
           ]);
     in {
       # used with mybinder.org
