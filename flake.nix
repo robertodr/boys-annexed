@@ -17,9 +17,8 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
-    in {
-      devShell = pkgs.mkShell {
-        nativeBuildInputs = with pkgs; [
+      derivation = pkgs.mkShell {
+        packages = with pkgs; [
           cmake
           gcc
           hdf5
@@ -42,5 +41,8 @@
         hardeningDisable = ["all"];
         NINJA_STATUS = "[Built edge %f of %t in %e sec] ";
       };
+    in {
+      defaultPackage = derivation;
+      devShell = derivation;
     });
 }
