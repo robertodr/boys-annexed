@@ -29,10 +29,11 @@
             ps.sympy
             ps.tqdm
             ps.typer
+            ps.scipy
           ]);
     in {
       # used with mybinder.org
-      defaultPackage = pkgs.mkShell {packages = [pythonEnv];};
+      defaultPackage = pythonEnv;
 
       devShell = pkgs.mkShell {
         packages = with pkgs; [
