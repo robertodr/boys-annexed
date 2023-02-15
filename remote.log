@@ -1,0 +1,1 @@
+0153700d-0440-45c8-86f1-4b876e5e461d bucket=old-dogs-old-tricks datacenter=US encryption=none exporttree=yes host=s3.amazonaws.com name=public-s3 port=80 public=yes storageclass=STANDARD type=S3 timestamp=1676478825.560155531s
