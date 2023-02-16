@@ -28,7 +28,12 @@ def boys(n, x):
     return lowergamma(n + 1 / 2, x) / (2 * Pow(x, (n + 1 / 2)))
 
 
-def main(file_path: Path = typer.Argument("boys_reference.h5")) -> None:
+def main(
+    file_path: Path = typer.Argument(
+        "boys_reference.h5",
+        help="Filename for the reference dataset. Will be saved in the 'data' folder.",
+    )
+) -> None:
     # change suffix to ".h5"
     file_path = file_path.with_suffix(".h5")
 
