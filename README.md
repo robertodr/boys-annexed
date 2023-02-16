@@ -20,6 +20,11 @@ stored in a S3 bucket and **you will need**
   git config remote.origin.annex-sync true
   git config annex.largefiles 'largerthan=1MiB'
   ```
+* Initialize a remote:
+  ```
+  git annex init 'floofy'
+  ```
+  the name you choose is not important.
 * Enable the S3 bucket as remote:
   ```
   git annex enableremote public-s3
