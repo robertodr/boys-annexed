@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -eu
+
+echo "$PWD"
+
+git annex init hdf5-data
+
+git config remote.origin.annex-ignore true
+git config remote.origin.annex-sync true
+git config annex.largefiles 'largerthan=1MiB'
+
+git annex enableremote public-s3
+
+git annex get
