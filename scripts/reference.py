@@ -8,8 +8,8 @@ import typer
 from sympy import Float, Integer, Pow, Range, lowergamma, symbols
 from tqdm import trange
 
-x, y, z, t = symbols("x y z t", real=True, positive=True)
-i, j, k, l, m, n = symbols("i j k l m n", integer=True, positive=True)
+x = symbols("x", real=True, positive=True)
+i, n = symbols("i n", integer=True, positive=True)
 
 
 def interval(*, a, b, n):
