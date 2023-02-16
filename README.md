@@ -10,12 +10,10 @@ stored in a S3 bucket and **you will need**
   ```
   git clone https://github.com/robertodr/old-dogs-old-tricks.git
   ```
-* Go in the root of the repo and initialize the `git-annex` remote:
+* Go in the root of the repo:
   ```
   cd old-dogs-old-tricks
-  git annex init hdf5-data
   ```
-  the name you give to the `git-annex` remote is not relevant.
 * Fix some configuration options for the `git-annex` remote:
   ```
   git config remote.origin.annex-ignore true

@@ -3,14 +3,9 @@
 set -euxo
 
 echo "$PWD"
-ls -lhtr
-
-git status
 
 git config --global user.email "jovyan@repo2docker"
 git config --global user.name "Jovyan"
-
-git annex init hdf5-data
 
 git config remote.origin.annex-ignore true
 git config remote.origin.annex-sync true
