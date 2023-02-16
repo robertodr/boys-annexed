@@ -25,8 +25,9 @@ stored in a S3 bucket and **you will need**
   git annex init 'floofy'
   ```
   the name you choose is not important.
-* Enable the S3 bucket as remote:
+* Initialize and enable the S3 bucket as remote:
   ```
+  git annex initremote public-s3 type=S3 encryption=none bucket="old-dogs-old-tricks" exporttree=yes public=yes
   git annex enableremote public-s3
   ```
   here the name `public-s3` **matters**.

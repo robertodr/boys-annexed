@@ -13,6 +13,7 @@ git config annex.largefiles 'largerthan=1MiB'
 
 git annex init 'repo2docker'
 
+git annex initremote public-s3 type=S3 encryption=none bucket="old-dogs-old-tricks" exporttree=yes public=yes
 git annex enableremote public-s3
 
 git annex get
