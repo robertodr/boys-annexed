@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euxo
 
 echo "$PWD"
+ls -lhtr
+
+git status
 
 git config --global user.email "jovyan@repo2docker"
 git config --global user.name "Jovyan"
