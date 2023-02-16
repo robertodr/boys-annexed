@@ -4,6 +4,9 @@ set -eu
 
 echo "$PWD"
 
+git config --global user.email "jovyan@repo2docker"
+git config --global user.name "Jovyan"
+
 git annex init hdf5-data
 
 git config remote.origin.annex-ignore true
