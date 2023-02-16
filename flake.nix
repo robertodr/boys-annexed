@@ -33,14 +33,13 @@
           ]);
     in {
       # used with mybinder.org
-      defaultPackage = [pkgs.git-annex pkgs.git-annex-remove-rclone pythonEnv];
+      defaultPackage = [pkgs.git-annex pythonEnv];
 
       devShell = pkgs.mkShell {
         packages = [
           pkgs.cmake
           pkgs.gcc
           pkgs.git-annex
-          pkgs.git-annex-remote-rclone
           pkgs.hdf5
           pkgs.highfive
           pkgs.ninja
@@ -49,7 +48,7 @@
 
         hardeningDisable = ["all"];
         NINJA_STATUS = "[Built edge %f of %t in %e sec] ";
-	BUCKET = "old-dogs-old-tricks";
+        BUCKET = "old-dogs-old-tricks";
       };
     });
 }
