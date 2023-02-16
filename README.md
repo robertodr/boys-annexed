@@ -20,6 +20,7 @@ stored in a S3 bucket and **you will need**
   ```
   git config remote.origin.annex-ignore true
   git config remote.origin.annex-sync true
+  git config annex.largefiles 'largerthan=1MiB'
   ```
 * Enable the S3 bucket as remote:
   ```
@@ -29,5 +30,23 @@ stored in a S3 bucket and **you will need**
 * Finally, get the actual HDF5 datasets with:
   ```
   git annex get
+  ```
+  
+## Working with the data tracked by `git-annex`
+
+* To modify any of the datasets in the annex, you first need to unlock it:
+  ```
+  git annex unlock data/boys_reference.h5 
+  ```
+  and then lock it again when you're done:
+  ```
+  git annex lock data/boys_reference.h5
+  ```
+* To add a file to the annex:
+  ```
+  git annex add data/new_file.h5
+  git commit -m "..."
+  # TODO do I need? git annex copy --to=public-s3 data/new_file.h5 
+  git annex sync --content
   ```
 
