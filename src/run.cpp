@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 int
 main()
 {
-    constexpr auto max_order = 2;
+    constexpr auto max_order = 5;
 
     auto fpath = fs::path("data/boys_reference.h5");
 
@@ -43,7 +43,7 @@ main()
         auto col = std::vector<double>(xs.size());
 
         // save order by order
-        for (auto o = 0; o < max_order; ++o)
+        for (auto o = 0; o <= max_order; ++o)
         {
             // collect column
             for (auto i = 0; i < xs.size(); ++i)

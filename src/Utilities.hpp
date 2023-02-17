@@ -45,6 +45,9 @@ constexpr auto
 constexpr_for(F&& f) -> void
 {
     if constexpr (Start < End)
+    constexpr auto cond = (Increment > 0) ? (Start < End) : (Start > End);
+
+    if constexpr (cond)
     {
         f(std::integral_constant<decltype(Start), Start>());
         constexpr_for<Start + Increment, End, Increment>(f);

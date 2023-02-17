@@ -23,7 +23,7 @@ boys_function(const std::vector<double>& xs) -> std::vector<double>
 
     auto n_xs = xs.size();
 
-    auto ys = std::vector<double>(n_xs * ncols, 0.0);
+    auto ys = std::vector<double>(n_xs * ncols);
 
     const double SQRT_M_PI = std::sqrt(M_PI);
 
