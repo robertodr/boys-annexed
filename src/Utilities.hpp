@@ -9,7 +9,7 @@
 #define __host__
 #define __device__
 
-__host__ auto
+__host__ inline auto
 boys_function_0(const std::vector<double>& xs) -> std::vector<double>
 {
     auto n_xs = xs.size();
@@ -25,6 +25,32 @@ boys_function_0(const std::vector<double>& xs) -> std::vector<double>
 
     return ys;
 }
+
+namespace detail {
+/** Compile-time loop-application of a function.
+ *
+ * @tparam Start loop start index.
+ * @tparam End loop end index.
+ * @tparam Increment loop increment.
+ * @tparam F function to apply.
+ *
+ * @param[in] F function to apply with signature
+ *
+ * auto F(auto i) -> void;
+ *
+ * with i the loop index.
+ */
+template <auto Start, auto End, auto Increment, typename F>
+constexpr auto
+constexpr_for(F&& f) -> void
+{
+    if constexpr (Start < End)
+    {
+        f(std::integral_constant<decltype(Start), Start>());
+        constexpr_for<Start + Increment, End, Increment>(f);
+    }
+}
+}  // namespace detail
 
 // FIXME on the device it should be fma, not std::fma!
 
