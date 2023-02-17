@@ -5,6 +5,7 @@
 
 #include "HornerScheme.hpp"
 #include "Pretabulated.hpp"
+#include "Utilities.hpp"
 
 namespace mcmurchie_davidson {
 auto boys_function(size_t order, const std::vector<double>& xs) -> std::vector<double>;
@@ -28,9 +29,13 @@ boys_function(const std::vector<double>& xs) -> std::vector<double>
 
     for (auto i = 0; i < n_xs; ++i)
     {
-        auto x            = xs[i];
-        auto sqrt_x       = std::sqrt(x);
-        ys[0 + i * ncols] = SQRT_M_PI * std::erf(sqrt_x) / (2 * sqrt_x);
+        auto offset = i * ncols;
+        auto x      = xs[i];
+        auto sqrt_x = std::sqrt(x);
+        auto exp_mx = std::exp(-x);
+
+        // zero-th order Boys' function
+        ys[0 + offset] = SQRT_M_PI * std::erf(sqrt_x) / (2 * sqrt_x);
 
         auto p = grid_point(x);
 
@@ -39,23 +44,18 @@ boys_function(const std::vector<double>& xs) -> std::vector<double>
             auto w = x - 0.1 * p;
             auto y = horner(w, table[p]);
 
-            ys[order + i * ncols] = y;
+            ys[order + offset] = y;
 
-            // downward recursion
-            for (auto o = order - 1; o > 0; --o)
-            {
-                // TODO rewrite as compile-time recursion
-                ys[o + i * ncols] = (2.0 * x * ys[(o + 1) + i * ncols] + std::exp(-x)) / (2 * o + 1);
-            }
+            // compile-time unrolled downward recursion
+            detail::constexpr_for<order - 1, 0, -1>(
+                [&ys, x, exp_mx, offset](auto o) { ys[o + offset] = std::fma(2 * x, ys[(o + 1) + offset], exp_mx) / (2 * o + 1); });
         }
         else
         {
-            // TODO rewrite upward recursion as compile-time recursion
-            auto fia = 1.0 / x;
-            for (auto o = 1; o < order; ++o)
-            {
-                ys[(o + 1) + i * ncols] = 0.5 * fia * (2 * o + 1) * ys[o + i * ncols];
-            }
+            auto x_m1 = 1.0 / x;
+            // compile-time unrolled upward recursion
+            detail::constexpr_for<1, order, 1>(
+                [&ys, x_m1, exp_mx, offset](auto o) { ys[(o + 1) + offset] = 0.5 * x_m1 * std::fma((2 * o + 1), ys[o + offset], -exp_mx); });
         }
     }
 
