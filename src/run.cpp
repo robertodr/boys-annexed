@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 
+#include "mcmurchie_davidson/McMurchieDavidson.hpp"
+
 namespace fs = std::filesystem;
 
 int
@@ -18,6 +20,7 @@ main()
     // lo_interval: [0.0, 11.5) region
     {
         auto xs = H5Easy::load<std::vector<double>>(file, "/lo_interval/xs");
+        auto ys = mcmurchie_davidson::boys_function(0, xs);
     }
 
     // mid_interval: [11.5, 13.5) region
