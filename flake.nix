@@ -39,6 +39,7 @@
         packages = [
           pkgs.cmake
           pkgs.gcc
+          pkgs.gdb
           pkgs.git-annex
           pkgs.hdf5
           pkgs.highfive
