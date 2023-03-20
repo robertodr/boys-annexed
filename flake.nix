@@ -33,7 +33,7 @@
           ]);
     in {
       # used with mybinder.org
-      defaultPackage = [pkgs.git-annex pythonEnv];
+      defaultPackage = [pkgs.git-annex pkgs.git-annex-remote-rclone pythonEnv];
 
       devShell = pkgs.mkShell {
         packages = [
@@ -41,6 +41,7 @@
           pkgs.gcc
           pkgs.gdb
           pkgs.git-annex
+          pkgs.git-annex-remote-rclone
           pkgs.hdf5
           pkgs.highfive
           pkgs.ninja
