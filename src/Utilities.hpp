@@ -2,6 +2,8 @@
 
 #include <array>
 #include <cmath>
+#include <numeric>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -9,6 +11,39 @@
 #define __host__
 #define __device__
 
+/** Numpy-style check for floating-point equality.
+ *
+ * @tparam T type of the arguments.
+ * @param a left operand.
+ * @param b right operand.
+ * @param rtol relative tolerance.
+ * @param atol absolute tolerance.
+ *
+ * See: https://numpy.org/doc/stable/reference/generated/numpy.allclose.html
+ */
+__host__ __device__ template <typename T>
+inline auto
+all_close(T a, T b, T rtol, T atol) -> bool
+{
+    static_assert(std::is_floating_point_v<T>, "all_close is valid for floating-point numbers");
+    return (std::abs(a - b) <= atol + rtol * std::abs(b));
+}
+
+/** Whether a floating-point number is zero.
+ *
+ * @tparam T type of the arguments.
+ * @param x number to be checked.
+ * @param atol absolute tolerance.
+ */
+__host__ __device__ template <typename T>
+inline auto
+is_zero(T x, T atol = std::numeric_limits<T>::epsilon()) -> bool
+{
+    static_assert(std::is_floating_point_v<T>, "is_zero is valid for floating-point numbers");
+    return all_close(x, T{0.0}, 0.0, atol);
+}
+
+// FIXME device function as well
 __host__ inline auto
 boys_function_0(const std::vector<double>& xs) -> std::vector<double>
 {
@@ -19,8 +54,16 @@ boys_function_0(const std::vector<double>& xs) -> std::vector<double>
 
     for (auto i = 0; i < n_xs; ++i)
     {
-        auto sqrt_x = std::sqrt(xs[i]);
-        ys[i]       = SQRT_M_PI * std::erf(sqrt_x) / (2 * sqrt_x);
+        auto x = xs[i];
+        if (is_zero(x))
+        {
+            ys[i] = 1.0;
+        }
+        else
+        {
+            auto sqrt_x = std::sqrt(x);
+            ys[i]       = SQRT_M_PI * std::erf(sqrt_x) / (2 * sqrt_x);
+        }
     }
 
     return ys;
@@ -44,7 +87,6 @@ template <auto Start, auto End, auto Increment, typename F>
 constexpr auto
 constexpr_for(F&& f) -> void
 {
-    if constexpr (Start < End)
     constexpr auto cond = (Increment > 0) ? (Start < End) : (Start > End);
 
     if constexpr (cond)
