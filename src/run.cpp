@@ -11,7 +11,7 @@ namespace fs = std::filesystem;
 int
 main()
 {
-    constexpr auto max_order = 5;
+    constexpr auto max_order = 32;
 
     auto fpath = fs::path("data/boys_reference.h5");
 

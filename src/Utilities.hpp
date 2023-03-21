@@ -84,7 +84,7 @@ namespace detail {
  * with i the loop index.
  */
 template <auto Start, auto End, auto Increment, typename F>
-constexpr auto
+__host__ __device__ constexpr auto
 constexpr_for(F&& f) -> void
 {
     constexpr auto cond = (Increment > 0) ? (Start < End) : (Start > End);
@@ -95,7 +95,53 @@ constexpr_for(F&& f) -> void
         constexpr_for<Start + Increment, End, Increment>(f);
     }
 }
+/** Compile-time fill an array of N elements with results of a function of the
+ * index.
+ *
+ * @tparam T output scalar type
+ * @tparam N size of the array
+ * @tparam Generator function to apply on each index. Signature: T op(std::size_t)
+ * @tparam Is indices
+ * @param op generator function
+ * @param index sequence
+ */
+template <typename T, size_t N, typename Callable, std::size_t... Is>
+__host__ __device__ constexpr auto
+fill_array_impl(Callable op, std::index_sequence<Is...>) -> std::array<T, N>
+{
+    return {{op(Is)...}};
+}
 }  // namespace detail
+
+/** Compile-time fill an array of N elements with results of a function of the
+ * index.
+ *
+ * @tparam T output scalar type
+ * @tparam N size of the array
+ * @tparam Callable function to apply on each index.
+ * Signature: T op(std::size_t)
+ * @tparam Is indices
+ * @param op generator function
+ */
+template <typename T, size_t N, typename Callable, typename Is = std::make_index_sequence<N>>
+__host__ __device__ constexpr auto
+fill_array(Callable op) -> std::array<T, N>
+{
+    return detail::fill_array_impl<T, N>(op, Is{});
+}
+
+/** Compile-time array of the N first inverse odd numbers.
+ *
+ * @tparam T output scalar type
+ * @tparam N size of the array
+ */
+template <typename T, size_t N>
+__host__ __device__ constexpr auto
+odd_numbers() -> std::array<T, N>
+{
+    // can't use std::fma because is not constexpr in C++17
+    return fill_array<T, N>([](auto o) { return (T{2} * o + T{1}); });
+}
 
 // FIXME on the device it should be fma, not std::fma!
 
