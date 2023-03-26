@@ -105,9 +105,9 @@ constexpr_for(F&& f) -> void
  * @param op generator function
  * @param index sequence
  */
-template <typename T, size_t N, typename Callable, std::size_t... Is>
+template <size_t N, typename Callable, size_t... Is>
 __host__ __device__ constexpr auto
-fill_array_impl(Callable op, std::index_sequence<Is...>) -> std::array<T, N>
+fill_array_impl(Callable op, std::index_sequence<Is...>) -> std::array<std::result_of_t<Callable(size_t)>, N>
 {
     return {{op(Is)...}};
 }
@@ -116,18 +116,17 @@ fill_array_impl(Callable op, std::index_sequence<Is...>) -> std::array<T, N>
 /** Compile-time fill an array of N elements with results of a function of the
  * index.
  *
- * @tparam T output scalar type
  * @tparam N size of the array
  * @tparam Callable function to apply on each index.
  * Signature: T op(std::size_t)
  * @tparam Is indices
  * @param op generator function
  */
-template <typename T, size_t N, typename Callable, typename Is = std::make_index_sequence<N>>
+template <size_t N, typename Callable, typename Is = std::make_index_sequence<N>>
 __host__ __device__ constexpr auto
-fill_array(Callable op) -> std::array<T, N>
+fill_array(Callable op) -> std::array<std::result_of_t<Callable(size_t)>, N>
 {
-    return detail::fill_array_impl<T, N>(op, Is{});
+    return detail::fill_array_impl<N>(op, Is{});
 }
 
 /** Compile-time array of the N first inverse odd numbers.
@@ -135,12 +134,11 @@ fill_array(Callable op) -> std::array<T, N>
  * @tparam T output scalar type
  * @tparam N size of the array
  */
-template <typename T, size_t N>
+template <size_t N>
 __host__ __device__ constexpr auto
-odd_numbers() -> std::array<T, N>
+odd_numbers() -> std::array<size_t, N>
 {
-    // can't use std::fma because is not constexpr in C++17
-    return fill_array<T, N>([](auto o) { return (T{2} * o + T{1}); });
+    return fill_array<N>([](auto o) { return (2 * o + 1); });
 }
 
 // FIXME on the device it should be fma, not std::fma!
