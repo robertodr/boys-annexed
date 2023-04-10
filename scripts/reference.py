@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
 import datetime
+from pathlib import Path
 
 import h5py
 import typer
@@ -48,7 +48,6 @@ def main(
     }
 
     with h5py.File(path, "w") as fh:
-
         fh.attrs["created"] = f"{datetime.datetime.now().isoformat(timespec='minutes')}"
 
         for k, v in intervals.items():

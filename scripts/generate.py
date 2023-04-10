@@ -4,7 +4,8 @@ from pathlib import Path
 
 import typer
 
-import mcmurchie_davidson, pade
+import mcmurchie_davidson
+import pade
 
 
 def main(
