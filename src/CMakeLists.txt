@@ -6,7 +6,7 @@ target_include_directories(run
   )
 
 add_subdirectory(mcmurchie_davidson)
-#add_subdirectory(pade)
+add_subdirectory(pade)
 
 target_link_libraries(run
   PRIVATE

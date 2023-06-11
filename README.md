@@ -54,3 +54,8 @@ stored in a S3 bucket and **you will need**
   git annex sync --content
   ```
 
+## `git-annex` with a public S3 bucket
+
+### Creating the S3 bucket
+
+### 

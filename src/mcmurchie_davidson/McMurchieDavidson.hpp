@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <iostream>
 #include <vector>
 
 #include "HornerScheme.hpp"
@@ -27,7 +28,7 @@ boys_function(const std::vector<double>& xs) -> std::vector<double>
 
     const double SQRT_M_PI = std::sqrt(M_PI);
 
-    constexpr auto odds = odd_numbers<order>();
+    constexpr auto odds = odd_numbers<order+1>();
 
     for (auto i = 0; i < n_xs; ++i)
     {

@@ -143,70 +143,26 @@ odd_numbers() -> std::array<size_t, N>
 
 // FIXME on the device it should be fma, not std::fma!
 
-/** @{ Compile-time loop unrolling for upward recurrence */
 namespace detail {
-template <auto order>
-__host__ __device__ auto
-upward(double* ys, double x_m1, double exp_mx, size_t i) -> void
-{
-    // FIXME indexing!
-    ys(order + 1, i) = 0.5 * x_m1 * std::fma((2 * order + 1), ys(order, i), -exp_mx);
-}
+template <typename T, typename, T Begin, bool Increasing>
+struct integer_range_impl;
 
-template <auto order>
-__host__ __device__ auto
-upward(double* ys, double x_m1, double exp_mx) -> void
+template <typename T, T... Ns, T Begin>
+struct integer_range_impl<T, std::integer_sequence<T, Ns...>, Begin, true>
 {
-    // FIXME indexing!
-    ys(order + 1) = 0.5 * x_m1 * std::fma((2 * order + 1), ys(order), -exp_mx);
-}
+    using type = std::integer_sequence<T, Ns + Begin...>;
+};
+
+template <typename T, T... Ns, T Begin>
+struct integer_range_impl<T, std::integer_sequence<T, Ns...>, Begin, false>
+{
+    using type = std::integer_sequence<T, Begin - Ns...>;
+};
 }  // namespace detail
 
-template <auto... indices>
-__host__ __device__ auto
-upward_recurrence(std::integer_sequence<size_t, indices...>, double* ys, double x_m1, double exp_mx, size_t i) -> void
-{
-    (detail::upward<indices>(ys, x_m1, exp_mx, i), ...);
-}
+template <typename T, T Begin, T End>
+using make_integer_range =
+    typename detail::integer_range_impl<T, std::make_integer_sequence<T, (Begin < End) ? End - Begin : Begin - End>, Begin, (Begin < End)>::type;
 
-template <auto... indices>
-__host__ __device__ auto
-upward_recurrence(std::integer_sequence<size_t, indices...>, double* ys, double x_m1, double exp_mx) -> void
-{
-    (detail::upward<indices>(ys, x_m1, exp_mx), ...);
-}
-/**@}*/
-
-/** @{ Compile-time loop unrolling for downward recurrence */
-namespace detail {
-template <auto order>
-__host__ __device__ auto
-downward(double* ys, double x_m1, double exp_mx, size_t i) -> void
-{
-    // FIXME indexing!
-    ys(order + 1, i) = 0.5 * x_m1 * std::fma((2 * order + 1), ys(order, i), -exp_mx);
-}
-
-template <auto order>
-__host__ __device__ auto
-downward(double* ys, double x_m1, double exp_mx) -> void
-{
-    // FIXME indexing!
-    ys(order + 1) = 0.5 * x_m1 * std::fma((2 * order + 1), ys(order), -exp_mx);
-}
-}  // namespace detail
-
-template <auto... indices>
-__host__ __device__ auto
-downward_recurrence(std::integer_sequence<size_t, indices...>, double* ys, double x_m1, double exp_mx, size_t i) -> void
-{
-    (detail::downward<indices>(ys, x_m1, exp_mx, i), ...);
-}
-
-template <auto... indices>
-__host__ __device__ auto
-downward_recurrence(std::integer_sequence<size_t, indices...>, double* ys, double x_m1, double exp_mx) -> void
-{
-    (detail::downward<indices>(ys, x_m1, exp_mx), ...);
-}
-/**@}*/
+template <std::size_t Begin, std::size_t End>
+using make_index_range = make_integer_range<std::size_t, Begin, End>;

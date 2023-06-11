@@ -5,13 +5,32 @@
 #include <vector>
 
 #include "mcmurchie_davidson/McMurchieDavidson.hpp"
+#include "pade/Pade.hpp"
 
 namespace fs = std::filesystem;
+
+inline void
+dump_to_h5(size_t n_points, size_t max_order, const std::string& label, const std::vector<double>& data, H5Easy::File& h5file)
+{
+    auto col = std::vector<double>(n_points);
+
+    // save order by order
+    for (auto o = 0; o <= max_order; ++o)
+    {
+        // collect column
+        for (auto i = 0; i < n_points; ++i)
+        {
+            col[i] = data[o + i * (max_order + 1)];
+        }
+
+        H5Easy::dump(h5file, label + "order_" + std::to_string(o), col);
+    }
+}
 
 int
 main()
 {
-    constexpr auto max_order = 32;
+    constexpr auto max_order = 1;
 
     auto fpath = fs::path("data/boys_reference.h5");
 
@@ -36,25 +55,93 @@ main()
         in_lbl = lbl + "/xs";
         xs     = H5Easy::load<std::vector<double>>(ref, in_lbl);
 
-        // loop over method: pade, mcmurchie_davidson
-        // loop over backend: CPU, GPU
-        ys = mcmurchie_davidson::boys_function(max_order, xs);
+        // "loop" over method: pade, mcmurchie_davidson
+        // "loop" over backend: CPU, GPU
 
-        auto col = std::vector<double>(xs.size());
-
-        // save order by order
-        for (auto o = 0; o <= max_order; ++o)
-        {
-            // collect column
-            for (auto i = 0; i < xs.size(); ++i)
-            {
-                col[i] = ys[o + i * (max_order + 1)];
-            }
-
-            out_lbl = lbl + "/mcmurchie_davidson/cpu/ys/order_" + std::to_string(o);
-
-            H5Easy::dump(computed, out_lbl, col);
+        {  // McMurchie-Davidson, CPU
+            ys = mcmurchie_davidson::boys_function(max_order, xs);
+            dump_to_h5(xs.size(), max_order, lbl + "/mcmurchie_davidson/cpu/ys/", ys, computed);
         }
+
+        {  // Padé [5,6], CPU
+            ys = pade::boys_function<5, 6>(max_order, xs);
+
+            auto col = std::vector<double>(xs.size());
+
+            // save order by order
+            for (auto o = 0; o <= max_order; ++o)
+            {
+                // collect column
+                for (auto i = 0; i < xs.size(); ++i)
+                {
+                    col[i] = ys[o + i * (max_order + 1)];
+                }
+
+                out_lbl = lbl + "/pade_5_6/cpu/ys/order_" + std::to_string(o);
+
+                H5Easy::dump(computed, out_lbl, col);
+            }
+        }
+
+        //{  // Padé [9,10], CPU
+        //    ys = pade::boys_function<9, 10>(max_order, xs);
+
+        //    auto col = std::vector<double>(xs.size());
+
+        //    // save order by order
+        //    for (auto o = 0; o <= max_order; ++o)
+        //    {
+        //        // collect column
+        //        for (auto i = 0; i < xs.size(); ++i)
+        //        {
+        //            col[i] = ys[o + i * (max_order + 1)];
+        //        }
+
+        //        out_lbl = lbl + "/pade_9_10/cpu/ys/order_" + std::to_string(o);
+
+        //        H5Easy::dump(computed, out_lbl, col);
+        //    }
+        //}
+
+        //{  // Padé [15,16], CPU
+        //    ys = pade::boys_function<15, 16>(max_order, xs);
+
+        //    auto col = std::vector<double>(xs.size());
+
+        //    // save order by order
+        //    for (auto o = 0; o <= max_order; ++o)
+        //    {
+        //        // collect column
+        //        for (auto i = 0; i < xs.size(); ++i)
+        //        {
+        //            col[i] = ys[o + i * (max_order + 1)];
+        //        }
+
+        //        out_lbl = lbl + "/pade_15_16/cpu/ys/order_" + std::to_string(o);
+
+        //        H5Easy::dump(computed, out_lbl, col);
+        //    }
+        //}
+
+        //{  // Padé [25,26], CPU
+        //    ys = pade::boys_function<25, 26>(max_order, xs);
+
+        //    auto col = std::vector<double>(xs.size());
+
+        //    // save order by order
+        //    for (auto o = 0; o <= max_order; ++o)
+        //    {
+        //        // collect column
+        //        for (auto i = 0; i < xs.size(); ++i)
+        //        {
+        //            col[i] = ys[o + i * (max_order + 1)];
+        //        }
+
+        //        out_lbl = lbl + "/pade_25_26/cpu/ys/order_" + std::to_string(o);
+
+        //        H5Easy::dump(computed, out_lbl, col);
+        //    }
+        //}
     }
 
     return EXIT_SUCCESS;
